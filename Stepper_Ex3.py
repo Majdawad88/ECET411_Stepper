@@ -1,3 +1,6 @@
+
+#git clone https://github.com/Majdawad88/ECET411_Stepper.git
+
 import time
 import RPi.GPIO as GPIO
 GPIO.setwarnings(False) # Ignore warning for now stepPads = [19,13,6,5]
