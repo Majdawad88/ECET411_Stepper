@@ -37,7 +37,7 @@ def motorDrive(numberSteps, Frequency, Direction):
                                                 stepPadsStatus[j] = 1
                                         else:
                                                 GPIO.output(stepPads[j],False)
-						                                                stepPadsStatus[j] = 0
+                                                stepPadsStatus[j] = 0
 
                                         time.sleep(speed)
                                 print(stepPadsStatus)
@@ -48,5 +48,6 @@ while True:
         Freq = float(input("Enter Frequency: "))
         Dir = input("Enter Direction: ")
         motorDrive(numSteps, Freq, Dir)
+
 
 						
