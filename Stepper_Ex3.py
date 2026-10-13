@@ -1,49 +1,36 @@
-
-#git clone https://github.com/Majdawad88/ECET411_Stepper.git
-
 #git clone https://github.com/Majdawad88/ECET411_Stepper.git
 
 import time
 import RPi.GPIO as GPIO
 GPIO.setwarnings(False)  # Ignore warnings
 stepPads = [19, 13, 6, 5]
-stepPadsStatus = [0, 0, 0, 0]
 GPIO.setmode(GPIO.BCM)
 for i in range(0, 4):
         GPIO.setup(stepPads[i], GPIO.OUT)
+        GPIO.output(stepPads[i], False)
 
 def motorDrive(numberSteps, Frequency, Direction):
-        speed = float(1 / Frequency)
+        seq = [[1, 0, 0, 0],
+               [0, 1, 0, 0],
+               [0, 0, 1, 0],
+               [0, 0, 0, 1]]
         if Direction == 'R':
                 print("Reverse")
-                for k in range(0, numberSteps // 4):
-                        print("Step Number = ", k)
-                        for x in range(3, -1, -1):
-                                for j in range(0, 4):
-                                        if x == j:
-                                                GPIO.output(stepPads[j], True)
-                                                stepPadsStatus[j] = 1
-                                        else:
-                                                GPIO.output(stepPads[j], False)
-                                                stepPadsStatus[j] = 0
-                                print(stepPadsStatus)
-                                time.sleep(speed)
+                seq = seq[::-1]
         elif Direction == 'F':
                 print("Forward")
-                for k in range(0, numberSteps // 4):
-                        print("Step Number = ", k)
-                        for x in range(0, 4, 1):
-                                for j in range(0, 4):
-                                        if x == j:
-                                                GPIO.output(stepPads[j], True)
-                                                stepPadsStatus[j] = 1
-                                        else:
-                                                GPIO.output(stepPads[j], False)
-                                                stepPadsStatus[j] = 0
-                                print(stepPadsStatus)
-                                time.sleep(speed)
         else:
                 print("WRONG DIRECTION ENTERED!")
+                return
+        speed = 1.0 / Frequency
+        for k in range(numberSteps):
+                pattern = seq[k % 4]
+                for j in range(4):
+                        GPIO.output(stepPads[j], pattern[j])
+                time.sleep(speed)
+                if k % 256 == 0:
+                        print("Step", k, pattern)
+        print("Done:", numberSteps, "steps")
         for p in stepPads:              # release coils after move
                 GPIO.output(p, False)
 
@@ -51,9 +38,7 @@ try:
         while True:
                 numSteps = int(input("Enter Number of Steps: "))
                 Freq = float(input("Enter Frequency: "))
-                Dir = input("Enter Direction: ").strip().upper()
+                Dir = input("Enter Direction (F/R): ").strip().upper()
                 motorDrive(numSteps, Freq, Dir)
 except KeyboardInterrupt:
         GPIO.cleanup()
-
-						
